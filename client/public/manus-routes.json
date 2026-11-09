@@ -1,0 +1,11 @@
+{
+  "routes": [
+    { "path": "/", "title": "CuraNet Resource Catalogue" },
+    { "path": "/browse", "title": "Browse equipment" },
+    { "path": "/product/:id", "title": "Equipment detail" },
+    { "path": "/compare", "title": "Compare equipment" },
+    { "path": "/favourites", "title": "Saved equipment" },
+    { "path": "/request", "title": "Request assistance demo" },
+    { "path": "/directory", "title": "NGOs & CSR" }
+  ]
+}
