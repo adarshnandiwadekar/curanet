@@ -12,7 +12,6 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/browse" component={Home} />
       <Route path="/product/:id" component={Home} />
-      <Route path="/compare" component={Home} />
       <Route path="/favourites" component={Home} />
       <Route path="/request" component={Home} />
       <Route path="/directory" component={Home} />
