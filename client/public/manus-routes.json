@@ -6,6 +6,7 @@
     { "path": "/compare", "title": "Compare equipment" },
     { "path": "/favourites", "title": "Saved equipment" },
     { "path": "/request", "title": "Request assistance demo" },
-    { "path": "/directory", "title": "NGOs & CSR" }
+    { "path": "/directory", "title": "NGOs & CSR" },
+    { "path": "/admin/live", "title": "Live coordinator dashboard" }
   ]
 }

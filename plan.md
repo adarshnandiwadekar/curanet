@@ -62,3 +62,11 @@ CuraNet is a demo-first nonprofit healthcare resource catalogue for Mumbai and T
 - No medicines listing, exchange, delivery request, or redistribution workflow.
 - No fake testimonials, invented organisation contact details, or generated organisational relationships.
 - Preserve exactly 30 product records and all required route entries.
+
+# Live coordinator access extension
+
+CuraNet now separates public Demo content from a blank Live workflow. This extension adds verified coordinator access for Live enquiries while preserving the existing Manus OAuth/session foundation.
+
+The implementation extends Manus OAuth with a verified `coordinator` role and partner-region metadata, adds a durable `liveEnquiries` table, exposes public enquiry creation plus coordinator/admin list and status procedures through tRPC, and adds a protected `/admin/live` route. The public landing page now explains Demo versus Live responsibilities for new NGO partners. Live remains blank until records are verified; an enquiry is a workflow record, not a promise of allocation or partnership.
+
+The main files are `drizzle/schema.ts` and `drizzle/0001_live_coordinators.sql` for storage, `server/db.ts`, `server/_core/trpc.ts`, and `server/routers.ts` for persistence and authorization, `client/src/pages/LiveAdminPage.tsx` for the protected dashboard, and `client/src/pages/Home.tsx` plus `client/src/App.tsx` for the public explainer, Live submission, and route.

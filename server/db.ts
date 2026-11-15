@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertLiveEnquiry, InsertUser, liveEnquiries, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -88,4 +88,35 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function createLiveEnquiry(enquiry: InsertLiveEnquiry) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const result = await db.insert(liveEnquiries).values(enquiry);
+  const id = Number(result[0].insertId);
+  const rows = await db.select().from(liveEnquiries).where(eq(liveEnquiries.id, id)).limit(1);
+  return rows[0];
+}
+
+export async function listLiveEnquiries(region?: "Mumbai" | "Thane") {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const query = db.select().from(liveEnquiries).orderBy(desc(liveEnquiries.createdAt));
+  return region ? query.where(eq(liveEnquiries.region, region)) : query;
+}
+
+export async function listLiveEnquiriesForUser(user: { role: "user" | "coordinator" | "admin"; partnerRegions: string | null }) {
+  if (user.role === "admin") return listLiveEnquiries();
+  const regions = (user.partnerRegions ?? "").split(",").map(value => value.trim()).filter((value): value is "Mumbai" | "Thane" => value === "Mumbai" || value === "Thane");
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  if (regions.length === 0) return [];
+  return db.select().from(liveEnquiries).where(inArray(liveEnquiries.region, regions)).orderBy(desc(liveEnquiries.createdAt));
+}
+
+export async function updateLiveEnquiryStatus(id: number, status: "new" | "reviewing" | "referred" | "closed", assignedTo?: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.update(liveEnquiries).set({ status, assignedTo }).where(eq(liveEnquiries.id, id));
+  const rows = await db.select().from(liveEnquiries).where(eq(liveEnquiries.id, id)).limit(1);
+  return rows[0];
+}

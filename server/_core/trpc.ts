@@ -43,3 +43,15 @@ export const adminProcedure = t.procedure.use(
     });
   }),
 );
+
+export const coordinatorProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+    const isVerifiedCoordinator = ctx.user?.role === "coordinator" && ctx.user.partnerVerified;
+    const isAdmin = ctx.user?.role === "admin";
+    if (!ctx.user || (!isVerifiedCoordinator && !isAdmin)) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Verified NGO coordinator access is required" });
+    }
+    return next({ ctx: { ...ctx, user: ctx.user } });
+  }),
+);
