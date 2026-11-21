@@ -19,7 +19,7 @@
 @media(max-width:540px){.hero h1{font-size:3.35rem}.hero-art{min-height:225px}.hero-note{right:0;bottom:-9px}.stats-row,.process-grid,.product-grid,.form-grid{grid-template-columns:1fr}.filter-panel{grid-template-columns:1fr}.filter-panel h3,.filter-actions{grid-column:auto}.form-field.full{grid-column:auto}.detail-list{grid-template-columns:1fr 1fr}.form-footer{flex-direction:column;align-items:stretch}.directory-download{width:100%}}
 
 /* Final civic polish: let the card grid respond to its actual available width, not only the browser viewport. */
-:root{--forest:#245e59;--forest-deep:#163f3d;--forest-soft:#dcebe6;--sage:#eef4f0;--warm:#fcfaf5;--paper:#f3ede2;--line:#d5dfda;--orange:#aa6144;--shadow:0 18px 48px rgba(22,63,61,.10)}
+:root{--forest:#245e59;--forest-deep:#163f3d;--forest-soft:#dcebe6;--sage:#eef4f0;--warm:#fcfaf5;--paper:#f3ede2;--muted:#4f6059;--line:#d5dfda;--orange:#8c4528;--shadow:0 18px 48px rgba(22,63,61,.10)}
 .wordmark-mark{border-radius:50% 50% 50% 8px;background:var(--forest)}
 .product-grid{container-type:inline-size}
 .product-meta{flex-wrap:wrap}.product-card h3{overflow-wrap:anywhere}.card-footer{flex-wrap:wrap}.product-card .demo-label{max-width:100%}
