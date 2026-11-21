@@ -157,10 +157,11 @@ function AppShell({ children, onRequest, mode, onModeChange }: { children: React
   usePersisted("curanet-high-contrast", highContrast, setHighContrast);
 
   useEffect(() => {
-    document.body.classList.toggle("text-large", textLarge);
-    document.body.classList.toggle("high-contrast", highContrast);
+    const root = document.documentElement;
+    root.classList.toggle("text-large", textLarge);
+    root.classList.toggle("high-contrast", highContrast);
     return () => {
-      document.body.classList.remove("text-large", "high-contrast");
+      root.classList.remove("text-large", "high-contrast");
     };
   }, [textLarge, highContrast]);
 
