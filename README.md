@@ -41,6 +41,10 @@ Providers use the same controls while reviewing the public catalogue or explaini
 
 Accessibility settings do not expand Live permissions. A provider must still use an authenticated, verified coordinator account, and the server continues to enforce role and partner-region authorization for enquiries, status updates, and exports.
 
+### Automated production audit
+
+Lighthouse was run against [https://curanett.netlify.app](https://curanett.netlify.app) after deployment. The final scores were **Accessibility 100/100**, **Best Practices 100/100**, **Performance 79/100**, and **SEO 91/100**. No actionable accessibility audits remained. The audit also confirmed that browser zoom is permitted; the earlier restrictive `maximum-scale=1` viewport and low-contrast muted/accent text were corrected.
+
 ## Current Live operations status
 
 Completed in the repository: additive/repeat-safe migration SQL and journal metadata, server-side regional authorization, post-commit notification routing, protected CSV/PDF export helpers, and the public accessibility controls. The static frontend is deployed at [curanett.netlify.app](https://curanett.netlify.app).
