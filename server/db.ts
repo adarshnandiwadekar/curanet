@@ -1,4 +1,4 @@
-import { desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertLiveEnquiry, InsertUser, liveEnquiries, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -106,17 +106,43 @@ export async function listLiveEnquiries(region?: "Mumbai" | "Thane") {
 
 export async function listLiveEnquiriesForUser(user: { role: "user" | "coordinator" | "admin"; partnerRegions: string | null }) {
   if (user.role === "admin") return listLiveEnquiries();
-  const regions = (user.partnerRegions ?? "").split(",").map(value => value.trim()).filter((value): value is "Mumbai" | "Thane" => value === "Mumbai" || value === "Thane");
-  const db = await getDb();
-  if (!db) throw new Error("Database is not available");
-  if (regions.length === 0) return [];
-  return db.select().from(liveEnquiries).where(inArray(liveEnquiries.region, regions)).orderBy(desc(liveEnquiries.createdAt));
+  return listLiveEnquiriesForUserInRegions(user);
 }
 
-export async function updateLiveEnquiryStatus(id: number, status: "new" | "reviewing" | "referred" | "closed", assignedTo?: number) {
+function parsePartnerRegions(partnerRegions: string | null): Array<"Mumbai" | "Thane"> {
+  return (partnerRegions ?? "").split(",").map(value => value.trim()).filter((value): value is "Mumbai" | "Thane" => value === "Mumbai" || value === "Thane");
+}
+
+export async function listLiveEnquiriesForUserInRegions(user: { role: "user" | "coordinator" | "admin"; partnerVerified?: boolean; partnerRegions: string | null }, requestedRegion?: "Mumbai" | "Thane") {
+  if (user.role === "admin") return listLiveEnquiries(requestedRegion);
+  if (user.role !== "coordinator" || user.partnerVerified !== true) return [];
+  const regions = parsePartnerRegions(user.partnerRegions);
+  const allowedRegions = requestedRegion ? regions.filter(region => region === requestedRegion) : regions;
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-  await db.update(liveEnquiries).set({ status, assignedTo }).where(eq(liveEnquiries.id, id));
+  if (allowedRegions.length === 0) return [];
+  return db.select().from(liveEnquiries).where(inArray(liveEnquiries.region, allowedRegions)).orderBy(desc(liveEnquiries.createdAt));
+}
+
+export async function updateLiveEnquiryStatusForUser(user: { id: number; role: "user" | "coordinator" | "admin"; partnerVerified?: boolean; partnerRegions: string | null }, id: number, status: "new" | "reviewing" | "referred" | "closed") {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const existing = await db.select().from(liveEnquiries).where(eq(liveEnquiries.id, id)).limit(1);
+  const enquiry = existing[0];
+  if (!enquiry) return undefined;
+  if (user.role !== "admin" && (user.role !== "coordinator" || user.partnerVerified !== true || !parsePartnerRegions(user.partnerRegions).includes(enquiry.region))) return undefined;
+  const values = user.role === "admin" ? { status } : { status, assignedTo: user.id };
+  await db.update(liveEnquiries).set(values).where(eq(liveEnquiries.id, id));
   const rows = await db.select().from(liveEnquiries).where(eq(liveEnquiries.id, id)).limit(1);
   return rows[0];
+}
+
+export async function listEligibleCoordinatorEmails(region: "Mumbai" | "Thane") {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const candidates = await db.select({ email: users.email, partnerRegions: users.partnerRegions }).from(users).where(and(eq(users.role, "coordinator"), eq(users.partnerVerified, true)));
+  return candidates
+    .filter(candidate => Boolean(candidate.email) && parsePartnerRegions(candidate.partnerRegions).includes(region))
+    .map(candidate => ({ email: candidate.email!.trim().toLowerCase() }))
+    .filter((candidate, index, all) => all.findIndex(item => item.email === candidate.email) === index);
 }

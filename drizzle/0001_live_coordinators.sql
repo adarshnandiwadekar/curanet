@@ -1,7 +1,7 @@
 ALTER TABLE `users`
   MODIFY COLUMN `role` enum('user','coordinator','admin') NOT NULL DEFAULT 'user',
-  ADD COLUMN `partnerVerified` boolean NOT NULL DEFAULT false,
-  ADD COLUMN `partnerRegions` varchar(255) NULL;
+  ADD COLUMN IF NOT EXISTS `partnerVerified` boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS `partnerRegions` varchar(255) NULL;
 
 CREATE TABLE IF NOT EXISTS `liveEnquiries` (
   `id` int AUTO_INCREMENT NOT NULL,

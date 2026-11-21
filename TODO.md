@@ -1,7 +1,11 @@
+# CuraNet Live operations
 
-- [x] Wheelchair image composition rechecked at pixel level after feedback: measured subject center is within 1px of the canvas midpoint, and the rendered 391px detail view confirms the chair is centered.
-- [x] Final build/performance and route checks repeated after the correction; all pass.
-
-- [ ] Live coordinator dashboard: verified NGO coordinators in Mumbai and Thane can sign in, view incoming open enquiries, filter by region/status, and update enquiry status without exposing the dashboard to unauthenticated or unverified users.
-- [ ] Live authentication and role-based access: extend Manus OAuth-backed application sessions with verified coordinator/admin authorization and partner-region metadata; deny access when the authenticated account is not verified.
-- [ ] Demo-versus-Live partner onboarding explanation: publish a clear landing-page section describing fictional Demo records versus blank, verified-only Live records, open enquiries, and the coordinator workflow.
+- [x] Live coordinator dashboard: verified NGO coordinators in Mumbai and Thane can sign in, view incoming open enquiries, filter by region/status, update authorized enquiry status, and download filtered CSV/PDF reports. Server queries scope every read and status update to the authenticated admin or verified coordinator's permitted regions.
+- [x] Live authentication and role-based access: Manus OAuth-backed sessions use verified coordinator/admin authorization and partner-region metadata; unauthenticated and unverified users are denied by the server procedure.
+- [x] Demo-versus-Live partner onboarding explanation: the public experience describes fictional Demo records versus blank, verified-only Live records and open enquiries without implying inventory, allocation, eligibility, or partnership.
+- [x] Live enquiry safety: input schemas enforce bounded fields, the client requires an explicit Mumbai/Thane region, server-side rate limiting rejects repeated bursts, and notification delivery occurs only after the database insert succeeds.
+- [x] Coordinator notifications: server-only SMTP/Nodemailer routing sends minimal post-commit messages only to verified coordinator accounts with valid email addresses and matching partner regions. Delivery remains unverified until protected SMTP secrets and a real provider acceptance are observed.
+- [x] Protected exports: CSV escaping handles commas, quotes, newlines, and Unicode values; PDF exports are valid PDF documents with title, timestamp, filters, confidentiality notice, wrapping, and pagination for the currently visible authorized set.
+- [x] Migration metadata: `0001_live_coordinators` is recorded in the Drizzle journal and its SQL is additive/repeat-safe for existing columns and table state.
+- [ ] Managed deployment: attach/configure the server-capable production host, database, API origin, OAuth callback, CORS/cookie policy, and protected SMTP environment. Apply the migration only after schema inspection and verify post-migration structure.
+- [ ] Operational acceptance: using a verified coordinator account, create one non-sensitive test enquiry, observe SMTP provider acceptance, verify regional visibility and status updates, generate CSV/PDF, and remove or mark the test record under an explicit safe test-data policy.
