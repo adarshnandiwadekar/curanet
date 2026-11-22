@@ -98,7 +98,7 @@ function Header({ onRequest, mode, onModeChange }: { onRequest: () => void; mode
     <header className="site-header">
       <div className="header-inner">
         <Link className="wordmark" href="/" aria-label="CuraNet home" onClick={() => setMenuOpen(false)}>
-          <img className="wordmark-logo" src="/brand/curanet-logo.jpeg" alt="CuraNet" />
+          <img className="wordmark-logo" src="/brand/curanet-logo.png" alt="CuraNet" />
         </Link>
         <nav className="nav-links" aria-label="Primary navigation">
           {navItems.map(([label, href]) => (
@@ -135,7 +135,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div>
-          <Link className="wordmark" href="/" aria-label="CuraNet home"><img className="wordmark-logo" src="/brand/curanet-logo.jpeg" alt="CuraNet" /></Link>
+          <Link className="wordmark" href="/" aria-label="CuraNet home"><img className="wordmark-logo" src="/brand/curanet-logo.png" alt="CuraNet" /></Link>
           <p>A fictional, demo-first resource catalogue for learning how an NGO-mediated equipment review could work across Mumbai and Thane.</p>
         </div>
         <div className="footer-links">

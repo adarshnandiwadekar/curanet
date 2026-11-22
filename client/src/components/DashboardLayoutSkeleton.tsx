@@ -7,7 +7,7 @@ export function DashboardLayoutSkeleton() {
       <div className="w-[280px] border-r border-border bg-background p-4 space-y-6">
         {/* Logo area */}
         <div className="flex items-center gap-3 px-2">
-          <img className="h-10 w-40 object-contain object-left" src="/brand/curanet-logo.jpeg" alt="CuraNet" />
+          <img className="h-10 w-40 object-contain object-left" src="/brand/curanet-logo.png" alt="CuraNet" />
         </div>
 
         {/* Menu items */}
