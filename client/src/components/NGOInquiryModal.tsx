@@ -1,5 +1,5 @@
 import { ArrowRight, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type NGOInquiryModalProps = {
   open: boolean;
@@ -23,6 +23,8 @@ const emptyForm: InquiryForm = {
 };
 
 export default function NGOInquiryModal({ open, onClose }: NGOInquiryModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const restoreRef = useRef<HTMLElement | null>(null);
   const [form, setForm] = useState<InquiryForm>(emptyForm);
   const [submitted, setSubmitted] = useState(false);
   const setField = <K extends keyof InquiryForm>(field: K, value: InquiryForm[K]) => {
@@ -33,9 +35,19 @@ export default function NGOInquiryModal({ open, onClose }: NGOInquiryModalProps)
 
   useEffect(() => {
     if (!open) return;
-    const dismiss = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
-    window.addEventListener("keydown", dismiss);
-    return () => window.removeEventListener("keydown", dismiss);
+    restoreRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const focusables = () => Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button, input, textarea, [tabindex]:not([tabindex="-1"])') ?? []).filter((element) => !element.hasAttribute("disabled"));
+    const frame = window.requestAnimationFrame(() => focusables()[0]?.focus());
+    const trap = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); onClose(); return; }
+      if (event.key !== "Tab") return;
+      const items = focusables(); if (!items.length) return;
+      const first = items[0]; const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", trap);
+    return () => { window.cancelAnimationFrame(frame); document.removeEventListener("keydown", trap); restoreRef.current?.focus(); };
   }, [open, onClose]);
 
   if (!open) return null;
@@ -48,7 +60,7 @@ export default function NGOInquiryModal({ open, onClose }: NGOInquiryModalProps)
 
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="ngo-inquiry-title" onClick={(event) => { if (event.currentTarget === event.target) close(); }}>
-      <div className="modal">
+      <div className="modal" ref={dialogRef}>
         <div className="modal-header">
           <div><span className="eyebrow">Client-side demonstration only</span><h2 id="ngo-inquiry-title">NGO inquiry</h2></div>
           <button className="close-button" type="button" aria-label="Close NGO inquiry form" onClick={close}><X size={18} /></button>
