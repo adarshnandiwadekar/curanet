@@ -167,11 +167,7 @@ function DashboardLayoutContent({
                 <PanelLeft className="h-4 w-4 text-muted-foreground" />
               </button>
               {!isCollapsed ? (
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
-                  </span>
-                </div>
+                <img className="h-10 w-40 object-contain object-left" src="/brand/curanet-logo.jpeg" alt="CuraNet" />
               ) : null}
             </div>
           </SidebarHeader>
@@ -246,8 +242,9 @@ function DashboardLayoutContent({
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
               <div className="flex items-center gap-3">
+                <img className="h-9 w-32 object-contain object-left" src="/brand/curanet-logo.jpeg" alt="CuraNet" />
                 <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
+                  <span className="sr-only">
                     {activeMenuItem?.label ?? "Menu"}
                   </span>
                 </div>
