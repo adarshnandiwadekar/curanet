@@ -121,10 +121,10 @@ function Header({ onRequest, mode, onModeChange }: { onRequest: () => void; mode
           <img className="wordmark-logo" src="/brand/curanet-logo.png" alt="CuraNet" />
         </Link>
         <nav className="nav-links" aria-label="Primary navigation">
-          {navItems.map(([label, href]) => (
-            <Link key={href} className={`nav-link ${location === href ? "active" : ""}`} href={href}>
-              {label}
-            </Link>
+          {navItems.map(([label, href]) => href === "/#process" ? (
+            <a key={href} className="nav-link" href={href}>{label}</a>
+          ) : (
+            <Link key={href} className={`nav-link ${location === href ? "active" : ""}`} href={href}>{label}</Link>
           ))}
           <Link className={`nav-link ${location === "/favourites" ? "active" : ""}`} href="/favourites">Saved</Link>
         </nav>
@@ -138,7 +138,9 @@ function Header({ onRequest, mode, onModeChange }: { onRequest: () => void; mode
       </div>
       {menuOpen && (
         <nav className="mobile-nav" aria-label="Mobile navigation">
-          {navItems.map(([label, href]) => (
+          {navItems.map(([label, href]) => href === "/#process" ? (
+            <a key={href} className="nav-link" href={href} onClick={() => setMenuOpen(false)}>{label}</a>
+          ) : (
             <Link key={href} className="nav-link" href={href} onClick={() => setMenuOpen(false)}>{label}</Link>
           ))}
           <Link className="nav-link" href="/favourites" onClick={() => setMenuOpen(false)}>Saved equipment</Link>
@@ -319,7 +321,7 @@ function LiveHome({ onRequest }: { onRequest: () => void }) {
 
 function HomePage({ favourites, onFavourite, mode, onRequest }: { favourites: string[]; onFavourite: (id: string) => void; mode: CuraMode; onRequest: () => void }) {
   if (mode === "live") return <LiveHome onRequest={onRequest} />;
-  return <main className="page-frame"><section className="hero"><div><span className="eyebrow">A public-service demo for Mumbai & Thane</span><h1>Connecting surplus equipment with community needs.</h1><p className="hero-copy">Explore CuraNet’s prototype for NGO-mediated healthcare equipment redistribution across Mumbai and Thane.</p><div className="hero-actions"><Link className="button button-primary" href="/browse">Explore demo equipment <ArrowRight size={15} /></Link><Link className="button button-secondary" href="/#process">How CuraNet works <BookOpen size={15} /></Link></div></div><div className="hero-art"><img src="/medical/clinical-care.svg" alt="Illustration of fictional patient-care equipment" /><div className="hero-note"><strong>Clear boundaries matter.</strong>Every record is labelled demo data. No live inventory or real NGO contact is implied.</div></div></section><NoticeStrip /><ModeExplainer /><AboutSection /><section className="section"><div className="stats-row"><div className="stat-card"><strong>Showing 6</strong><span>featured examples from 30 records</span></div><div className="stat-card"><strong>6</strong><span>catalogue groups</span></div><div className="stat-card"><strong>12</strong><span>public reference entries</span></div><div className="stat-card"><strong>0</strong><span>live allocations made here</span></div></div></section><ProcessSection /><section className="section"><div className="section-heading"><div><span className="eyebrow">The catalogue</span><h2>See the kind of detail a review needs.</h2></div><p>Search fictional records by group, locality, condition, or availability. Newest sorting uses actual listed dates.</p></div><Catalogue favourites={favourites} onFavourite={onFavourite} compact /></section><DirectorySpotlight /></main>;
+  return <main className="page-frame"><section className="hero"><div><span className="eyebrow">A public-service demo for Mumbai & Thane</span><h1>Connecting surplus equipment with community needs.</h1><p className="hero-copy">Explore CuraNet’s prototype for NGO-mediated healthcare equipment redistribution across Mumbai and Thane.</p><div className="hero-actions"><Link className="button button-primary" href="/browse">Explore demo equipment <ArrowRight size={15} /></Link><a className="button button-secondary" href="/#process">How CuraNet works <BookOpen size={15} /></a></div></div><div className="hero-art"><img src="/medical/clinical-care.svg" alt="Illustration of fictional patient-care equipment" /><div className="hero-note"><strong>Clear boundaries matter.</strong>Every record is labelled demo data. No live inventory or real NGO contact is implied.</div></div></section><NoticeStrip /><ModeExplainer /><AboutSection /><section className="section"><div className="stats-row"><div className="stat-card"><strong>Showing 6</strong><span>featured examples from 30 records</span></div><div className="stat-card"><strong>6</strong><span>catalogue groups</span></div><div className="stat-card"><strong>12</strong><span>public reference entries</span></div><div className="stat-card"><strong>0</strong><span>live allocations made here</span></div></div></section><ProcessSection /><section className="section"><div className="section-heading"><div><span className="eyebrow">The catalogue</span><h2>See the kind of detail a review needs.</h2></div><p>Search fictional records by group, locality, condition, or availability. Newest sorting uses actual listed dates.</p></div><Catalogue favourites={favourites} onFavourite={onFavourite} compact /></section><DirectorySpotlight /></main>;
 }
 
 function ProductDetail({ product, favourite, onFavourite, onRequest }: { product: Product; favourite: boolean; onFavourite: () => void; onRequest: () => void }) {
@@ -401,8 +403,12 @@ export default function Home() {
   const toggleFavourite = (id: string) => setFavourites((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   useEffect(() => {
     if (location === "/request") setRequestOpen(true);
-    if (window.location.hash === "#process") window.setTimeout(() => document.getElementById("process")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
-    else window.scrollTo(0, 0);
+    const scrollToProcess = () => {
+      if (window.location.hash === "#process") window.requestAnimationFrame(() => document.getElementById("process")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
+    if (window.location.hash === "#process") scrollToProcess(); else window.scrollTo(0, 0);
+    window.addEventListener("hashchange", scrollToProcess);
+    return () => window.removeEventListener("hashchange", scrollToProcess);
   }, [location, mode]);
 
   let content: React.ReactNode;
